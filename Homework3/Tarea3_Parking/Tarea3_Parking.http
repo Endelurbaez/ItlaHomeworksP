@@ -1,6 +1,0 @@
-@Tarea3_Parking_HostAddress = http://localhost:5238
-
-GET {{Tarea3_Parking_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

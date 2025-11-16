@@ -1,6 +1,5 @@
 
-CREATE DATABASE ParkingDB;
-GO
+
 
 USE ParkingDB1;
 GO

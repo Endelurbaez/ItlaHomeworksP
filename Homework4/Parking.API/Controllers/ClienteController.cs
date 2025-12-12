@@ -1,63 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Parking.Application.Interfaces;
-using Parking.Domain.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using Parking.Application.Contracts;
+using Parking.Application.Dtos.Cliente;
 
-namespace Parking.API.Controllers
+namespace Parking.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class ClienteController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ClienteController : ControllerBase
+    private readonly IClienteService<ClienteDto> _clienteService;
+
+    public ClienteController(IClienteService<ClienteDto> clienteService)
     {
-        private readonly IClienteService _service;
-
-        public ClienteController(IClienteService service)
-        {
-            _service = service;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cliente>>> GetAll()
-        {
-            var clientes = await _service.GetAllAsync();
-            return Ok(clientes);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Cliente>> GetById(int id)
-        {
-            var cliente = await _service.GetByIdAsync(id);
-            if (cliente == null)
-                return NotFound();
-            return Ok(cliente);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult> Create(Cliente cliente)
-        {
-            await _service.AddAsync(cliente);
-            return CreatedAtAction(nameof(GetById), new { id = cliente.Id }, cliente);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, Cliente cliente)
-        {
-            if (id != cliente.Id)
-                return BadRequest();
-
-            await _service.UpdateAsync(cliente);
-            return NoContent();
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
-        {
-            await _service.DeleteAsync(id);
-            return NoContent();
-        }
+        _clienteService = clienteService;
     }
-}
 
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var clientes = await _clienteService.GetAllAsync();
+        return Ok(clientes);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var cliente = await _clienteService.GetByIdAsync(id);
+        if (cliente == null)
+            return NotFound();
+
+        return Ok(cliente);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] CreateClienteDto createDto)
+    {
+        var clienteDto = new ClienteDto
+        {
+            Cedula = createDto.Cedula,
+            Nombre = createDto.Nombre,
+            Apellido = createDto.Apellido,
+            Telefono = createDto.Telefono,
+            Email = createDto.Email,
+        };
+
+        var result = await _clienteService.CreateAsync(clienteDto);
+        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] UpdateClienteDto updateDto)
+    {
+        var existingCliente = await _clienteService.GetByIdAsync(id);
+        if (existingCliente == null)
+            return NotFound();
+
+        existingCliente.Cedula = updateDto.Cedula;
+        existingCliente.Nombre = updateDto.Nombre;
+        existingCliente.Apellido = updateDto.Apellido;
+        existingCliente.Telefono = updateDto.Telefono;
+        existingCliente.Email = updateDto.Email;
+
+        var result = await _clienteService.UpdateAsync(id, existingCliente);
+        return Ok(result);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var deleted = await _clienteService.DeleteAsync(id);
+        if (!deleted)
+            return NotFound();
+
+        return NoContent();
+    }
+} 

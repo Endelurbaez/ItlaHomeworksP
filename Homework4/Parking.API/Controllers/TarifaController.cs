@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Parking.Application.Interfaces;
-using Parking.Domain.Entities;
+﻿using Microsoft.AspNetCore.Mvc;
+using Parking.Application.Contracts;
+using Parking.Application.Dtos.Tarifa;
 
 namespace Parking.API.Controllers
 {
@@ -12,52 +8,50 @@ namespace Parking.API.Controllers
     [Route("api/[controller]")]
     public class TarifaController : ControllerBase
     {
-        private readonly ITarifaService _service;
+        private readonly ITarifaService<TarifaDto> _tarifaService;
 
-        public TarifaController(ITarifaService service)
+        public TarifaController(ITarifaService<TarifaDto> tarifaService)
         {
-            _service = service;
+            _tarifaService = tarifaService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Tarifa>>> GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var tarifas = await _service.GetAllAsync();
+            var tarifas = await _tarifaService.GetAllAsync();
             return Ok(tarifas);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Tarifa>> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var tarifa = await _service.GetByIdAsync(id);
-            if (tarifa == null)
-                return NotFound();
+            var tarifa = await _tarifaService.GetByIdAsync(id);
+            if (tarifa == null) return NotFound();
             return Ok(tarifa);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(Tarifa tarifa)
+        public async Task<IActionResult> Create([FromBody] TarifaDto dto)  // ← Usa TarifaDto directamente
         {
-            await _service.AddAsync(tarifa);
-            return CreatedAtAction(nameof(GetById), new { id = tarifa.Id }, tarifa);
+            var result = await _tarifaService.CreateAsync(dto);
+            if (result == null) return BadRequest();
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id, Tarifa tarifa)
+        public async Task<IActionResult> Update(int id, [FromBody] TarifaDto dto)  // ← Usa TarifaDto
         {
-            if (id != tarifa.Id)
-                return BadRequest();
-
-            await _service.UpdateAsync(tarifa);
-            return NoContent();
+            var updated = await _tarifaService.UpdateAsync(id, dto);
+            if (updated == null) return NotFound();
+            return Ok(updated);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            await _service.DeleteAsync(id);
+            var deleted = await _tarifaService.DeleteAsync(id);
+            if (!deleted) return NotFound();
             return NoContent();
         }
     }
 }
-

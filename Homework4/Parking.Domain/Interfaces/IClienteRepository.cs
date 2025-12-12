@@ -4,15 +4,10 @@ using System.Threading.Tasks;
 
 namespace Parking.Domain.Interfaces
 {
-    public interface IClienteRepository
+    public interface IClienteRepository : IBaseRepository<Cliente>
     {
-        Task<IEnumerable<Cliente>> GetAllAsync();
-        Task<Cliente> GetByIdAsync(int id);
-        Task AddAsync(Cliente cliente);
-        Task UpdateAsync(Cliente cliente);
-        Task DeleteAsync(int id);
+
+        // Métodos específicos de Cliente
+        Task<Cliente?> GetByEmailAsync(string email);
     }
 }
-
-
-

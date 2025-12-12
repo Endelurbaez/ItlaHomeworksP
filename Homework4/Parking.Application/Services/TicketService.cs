@@ -1,29 +1,54 @@
 ﻿using System;
-using Parking.Application.Interfaces;
-using Parking.Domain.Entities;
-using Parking.Domain.Interfaces;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
+using Parking.Application.Contracts;
+using Parking.Application.DTOs.Ticket;
 
-namespace Parking.Application.Services
+namespace Parking.Application.Services;
+
+public class TicketService : ITicketService<TicketDto>
 {
-    public class TicketService : ITicketService
+    public Task<TicketDto> CreateAsync(TicketDto dto)
     {
-        private readonly ITicketRepository _repo;
+        dto.Id = new Random().Next(100, 1000);
+        dto.Estado = "Activo";
+        return Task.FromResult(dto);
+    }
 
-        public TicketService(ITicketRepository repo)
+    public Task<TicketDto> UpdateAsync(int id, TicketDto dto)
+    {
+        dto.Id = id;
+        return Task.FromResult(dto);
+    }
+
+    public Task<bool> DeleteAsync(int id)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task<TicketDto?> GetByIdAsync(int id)
+    {
+        return Task.FromResult<TicketDto?>(new TicketDto
         {
-            _repo = repo;
-        }
+            Id = id,
+            VehiculoId = 1,
+            FechaEntrada = DateTime.Now.AddHours(-2),
+            FechaSalida = null,
+            TarifaId = 1,
+            TotalPagar = 100.50m,
+            Estado = "Activo"
+        });
+    }
 
-        public async Task<IEnumerable<Ticket>> GetAllAsync() => await _repo.GetAllAsync();
-        public async Task<Ticket> GetByIdAsync(int id) => await _repo.GetByIdAsync(id);
-        public async Task AddAsync(Ticket ticket) => await _repo.AddAsync(ticket);
-        public async Task UpdateAsync(Ticket ticket) => await _repo.UpdateAsync(ticket);
-        public async Task DeleteAsync(int id) => await _repo.DeleteAsync(id);
+    public Task<IEnumerable<TicketDto>> GetAllAsync()
+    {
+        var tickets = new List<TicketDto>
+        {
+            new() { Id = 1, VehiculoId = 1, FechaEntrada = DateTime.Now.AddHours(-3), FechaSalida = null, TarifaId = 1, TotalPagar = 150.75m, Estado = "Activo" },
+            new() { Id = 2, VehiculoId = 2, FechaEntrada = DateTime.Now.AddHours(-1), FechaSalida = DateTime.Now, TarifaId = 2, TotalPagar = 75.25m, Estado = "Pagado" },
+            new() { Id = 3, VehiculoId = 3, FechaEntrada = DateTime.Now.AddHours(-5), FechaSalida = null, TarifaId = 1, TotalPagar = 250.00m, Estado = "Activo" }
+        };
+
+        return Task.FromResult(tickets.AsEnumerable());
     }
 }
-
-
-
-

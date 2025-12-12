@@ -1,36 +1,25 @@
-using Microsoft.EntityFrameworkCore;
-using Parking.Application.Interfaces;
-using Parking.Application.Services;
-using Parking.Domain.Interfaces;
-using Parking.Infrastructure.Data;
-using Parking.Infrastructure.Repositories;
-
-var builder = WebApplication.CreateBuilder(args);
+﻿var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-// ======= DbContext =======
-builder.Services.AddDbContext<ParkinDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// ======= Repositories =======
-builder.Services.AddScoped<IClienteRepository, ClienteRepository>();
-builder.Services.AddScoped<IVehiculoRepository, VehiculoRepository>();
-builder.Services.AddScoped<ITarifaRepository, TarifaRepository>();
-builder.Services.AddScoped<ITicketRepository, TicketRepository>();
-
-// ======= Services =======
-builder.Services.AddScoped<IClienteService, ClienteService>();
-builder.Services.AddScoped<IVehiculoService, VehiculoService>();
-builder.Services.AddScoped<ITarifaService, TarifaService>();
-builder.Services.AddScoped<ITicketService, TicketService>();
-
-// ======= Controllers =======
 builder.Services.AddControllers();
 
-// ======= Swagger / OpenAPI =======
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// HABILITAR CORS para permitir conexiones del MVC
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMVC",
+        policy => policy
+            .WithOrigins(
+                "https://localhost:7222",  // MVC HTTPS
+                "http://localhost:5041",   // MVC HTTP
+                "https://localhost:7274",  // API misma (opcional)
+                "http://localhost:5262"    // API misma (opcional)
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
+});
+
+// ... resto de servicios (Swagger, etc.)
 
 var app = builder.Build();
 
@@ -42,10 +31,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseCors("AllowMVC");  // ← ¡ESTO ES CRÍTICO!
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
-

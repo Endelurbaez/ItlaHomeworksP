@@ -4,15 +4,10 @@ using System.Threading.Tasks;
 
 namespace Parking.Domain.Interfaces
 {
-    public interface IVehiculoRepository
+    public interface IVehiculoRepository : IBaseRepository<Vehiculo>
     {
-        Task<IEnumerable<Vehiculo>> GetAllAsync();
-        Task<Vehiculo> GetByIdAsync(int id);
-        Task AddAsync(Vehiculo vehiculo);
-        Task UpdateAsync(Vehiculo vehiculo);
-        Task DeleteAsync(int id);
+        // Métodos específicos de Vehiculo
+        Task<IEnumerable<Vehiculo>> GetByClienteIdAsync(int clienteId);
+        Task<Vehiculo?> GetByPlacaAsync(string placa);
     }
 }
-
-
-

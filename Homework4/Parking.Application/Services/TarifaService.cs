@@ -1,29 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using Parking.Application.Interfaces;
-using Parking.Domain.Entities;
-using Parking.Domain.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Parking.Application.Contracts;
+using Parking.Application.Dtos;
+using Parking.Application.Dtos.Tarifa;
 
-namespace Parking.Application.Services
+namespace Parking.Application.Services;
+
+public class TarifaService : ITarifaService<TarifaDto>
 {
-    public class TarifaService : ITarifaService
+    public Task<TarifaDto> CreateAsync(TarifaDto dto)
     {
-        private readonly ITarifaRepository _repo;
+        return Task.FromResult(dto);
+    }
 
-        public TarifaService(ITarifaRepository repo)
-        {
-            _repo = repo;
-        }
+    public Task<TarifaDto> UpdateAsync(int id, TarifaDto dto)
+    {
+        return Task.FromResult(dto);
+    }
 
-        public async Task<IEnumerable<Tarifa>> GetAllAsync() => await _repo.GetAllAsync();
-        public async Task<Tarifa> GetByIdAsync(int id) => await _repo.GetByIdAsync(id);
-        public async Task AddAsync(Tarifa tarifa) => await _repo.AddAsync(tarifa);
-        public async Task UpdateAsync(Tarifa tarifa) => await _repo.UpdateAsync(tarifa);
-        public async Task DeleteAsync(int id) => await _repo.DeleteAsync(id);
+    public Task<bool> DeleteAsync(int id)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task<TarifaDto?> GetByIdAsync(int id)
+    {
+        return Task.FromResult<TarifaDto?>(null);
+    }
+
+    public Task<IEnumerable<TarifaDto>> GetAllAsync()
+    {
+        return Task.FromResult(Enumerable.Empty<TarifaDto>());
+    }
+
+    public Task<TarifaDto?> GetByNombreAsync(string nombre)
+    {
+        throw new NotImplementedException();
     }
 }
-
-
-

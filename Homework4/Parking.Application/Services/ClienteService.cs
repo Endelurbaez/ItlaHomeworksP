@@ -1,27 +1,64 @@
-﻿using Parking.Application.Interfaces;
-using Parking.Domain.Entities;
-using Parking.Domain.Interfaces;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Parking.Application.Contracts;
+using Parking.Application.Dtos.Cliente;
 
-namespace Parking.Application.Services
+namespace Parking.Application.Services;
+
+public class ClienteService : IClienteService<ClienteDto>
 {
-    public class ClienteService : IClienteService
+    public Task<ClienteDto> CreateAsync(ClienteDto dto)
     {
-        private readonly IClienteRepository _repo;
+        dto.Id = new Random().Next(100, 1000);
+        return Task.FromResult(dto);
+    }
 
-        public ClienteService(IClienteRepository repo)
+    public Task<ClienteDto> UpdateAsync(int id, ClienteDto dto)
+    {
+        dto.Id = id;
+        return Task.FromResult(dto);
+    }
+
+    public Task<bool> DeleteAsync(int id)
+    {
+        return Task.FromResult(true);
+    }
+
+    // CORRECTO: Retorna Task<ClienteDto?> 
+    public Task<ClienteDto?> GetByIdAsync(int id)
+    {
+        return Task.FromResult<ClienteDto?>(new ClienteDto
         {
-            _repo = repo;
-        }
+            Id = id,
+            Nombre = "Cliente",
+            Apellido = "De Prueba",
+            Email = "cliente@test.com",
+            Cedula = "123456789",
+            Telefono = "809-555-5555"
+        });
+    }
 
-        public async Task<IEnumerable<Cliente>> GetAllAsync() => await _repo.GetAllAsync();
-        public async Task<Cliente> GetByIdAsync(int id) => await _repo.GetByIdAsync(id);
-        public async Task AddAsync(Cliente cliente) => await _repo.AddAsync(cliente);
-        public async Task UpdateAsync(Cliente cliente) => await _repo.UpdateAsync(cliente);
-        public async Task DeleteAsync(int id) => await _repo.DeleteAsync(id);
+    public Task<IEnumerable<ClienteDto>> GetAllAsync()
+    {
+        var clientes = new List<ClienteDto>
+        {
+            new() { Id = 1, Nombre = "Juan", Apellido = "Pérez", Email = "juan@test.com", Cedula = "00112345678", Telefono = "809-111-1111" },
+            new() { Id = 2, Nombre = "María", Apellido = "García", Email = "maria@test.com", Cedula = "00223456789", Telefono = "809-222-2222" },
+            new() { Id = 3, Nombre = "Carlos", Apellido = "Rodríguez", Email = "carlos@test.com", Cedula = "00334567890", Telefono = "809-333-3333" }
+        };
+
+        return Task.FromResult(clientes.AsEnumerable());
+    }
+
+    // CORRECTO: Retorna Task<ClienteDto?>
+    public Task<ClienteDto?> GetByCedulaAsync(string cedula)
+    {
+        return Task.FromResult<ClienteDto?>(new ClienteDto
+        {
+            Id = 99,
+            Nombre = "Cliente",
+            Apellido = "Con Cédula",
+            Email = "cedula@test.com",
+            Cedula = cedula,
+            Telefono = "809-999-9999"
+        });
     }
 }
-
-
-

@@ -4,13 +4,10 @@ using System.Threading.Tasks;
 
 namespace Parking.Domain.Interfaces
 {
-    public interface ITarifaRepository
+    public interface ITarifaRepository : IBaseRepository<Tarifa>
     {
-        Task<IEnumerable<Tarifa>> GetAllAsync();
-        Task<Tarifa> GetByIdAsync(int id);
-        Task AddAsync(Tarifa tarifa);
-        Task UpdateAsync(Tarifa tarifa);
-        Task DeleteAsync(int id);
+        // Métodos específicos de Tarifa
+        Task<Tarifa?> GetByNombreAsync(string nombre);
     }
 }
 

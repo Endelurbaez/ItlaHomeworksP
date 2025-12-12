@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Parking.Application.DTOs.Ticket
 {
-    public class TicketCreateDto
+    public class TicketCreateDto 
     {
-        public int ClienteId { get; set; }
         public int VehiculoId { get; set; }
+        public DateTime FechaEntrada { get; set; }
+        public DateTime? FechaSalida { get; set; }
         public int TarifaId { get; set; }
+        public decimal TotalPagar { get; set; }
+        public string Estado { get; set; } = string.Empty; 
     }
 }

@@ -1,16 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Parking.Domain.Entities;
 
-namespace Parking.Infrastructure.Data
+namespace Parking.Infrastructure
 {
-    public class ParkinDbContext : DbContext
+    public class ParkingDbContext : DbContext
     {
-        public ParkinDbContext(DbContextOptions<ParkinDbContext> options)
+        public ParkingDbContext(DbContextOptions<ParkingDbContext> options)
             : base(options)
         {
         }
 
-        // DbSets
+        // DbSets para cada entidad
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Vehiculo> Vehiculos { get; set; }
         public DbSet<Tarifa> Tarifas { get; set; }
@@ -20,56 +20,56 @@ namespace Parking.Infrastructure.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Cliente
+            // Configuración de Cliente
             modelBuilder.Entity<Cliente>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Nombre).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Apellido).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.Telefono).HasMaxLength(20);
-                entity.HasMany(e => e.Vehiculos)
-                      .WithOne(v => v.Cliente)
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(150);
+            });
+
+            // Configuración de Vehiculo
+            modelBuilder.Entity<Vehiculo>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Marca).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Modelo).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Placa).IsRequired().HasMaxLength(20);
+
+                entity.HasOne(v => v.Cliente)
+                      .WithMany(c => c.Vehiculos)
                       .HasForeignKey(v => v.ClienteId)
                       .OnDelete(DeleteBehavior.Cascade);
             });
 
-            // Vehiculo
-            modelBuilder.Entity<Vehiculo>(entity =>
-            {
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Placa).IsRequired().HasMaxLength(20);
-                entity.Property(e => e.Marca).HasMaxLength(50);
-                entity.Property(e => e.Modelo).HasMaxLength(50);
-            });
-
-            // Tarifa
+            // Configuración de Tarifa
             modelBuilder.Entity<Tarifa>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Descripcion).HasMaxLength(100);
+                entity.Property(e => e.Nombre).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.PrecioHora).HasColumnType("decimal(10,2)");
             });
 
-            // Ticket
+            // Configuración de Ticket
             modelBuilder.Entity<Ticket>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.FechaEntrada).IsRequired();
-                entity.Property(e => e.FechaSalida);
-                entity.Property(e => e.Total).HasColumnType("decimal(10,2)");
+
+                entity.Property(t => t.HoraEntrada).IsRequired();
+                entity.Property(t => t.HoraSalida);
+                entity.Property(t => t.Total).HasColumnType("decimal(10,2)");
 
                 entity.HasOne(t => t.Vehiculo)
-                      .WithMany()
+                      .WithMany(v => v.Tickets)
                       .HasForeignKey(t => t.VehiculoId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(t => t.Tarifa)
-                      .WithMany()
+                      .WithMany(tr => tr.Tickets)
                       .HasForeignKey(t => t.TarifaId)
                       .OnDelete(DeleteBehavior.Restrict);
             });
         }
     }
 }
-
-

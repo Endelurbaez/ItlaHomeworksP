@@ -1,0 +1,224 @@
+﻿@model Parking.Main.Models.VehiculoViewModel
+
+@{
+    ViewData["Title"] = "Detalles del Vehículo";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-info-circle"></i> Detalles del Vehículo
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Información Principal -->
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">Información del Vehículo</h5>
+
+                            <dl class="row">
+                                <dt class="col-sm-4">ID:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge bg-secondary">#@Model.Id</span>
+                                </dd>
+
+                                <dt class="col-sm-4">Placa:</dt>
+                                <dd class="col-sm-8">
+                                    <strong class="text-primary fs-5">@Model.Placa</strong>
+                                </dd>
+
+                                <dt class="col-sm-4">Marca:</dt>
+                                <dd class="col-sm-8">
+                                    <i class="bi bi-tag text-muted"></i> @Model.Marca
+                                </dd>
+
+                                <dt class="col-sm-4">Modelo:</dt>
+                                <dd class="col-sm-8">
+                                    <i class="bi bi-car text-muted"></i> @Model.Modelo
+                                </dd>
+
+                                <dt class="col-sm-4">Color:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge rounded-pill"
+                                          style="background-color: @ObtenerColorHex(Model.Color);
+                                                 color: @(EsColorClaro(Model.Color) ? "#000" : "#fff");
+                                                 padding: 6px 14px;">
+                                        @(Model.Color ?? "N/A")
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-4">Año:</dt>
+                                <dd class="col-sm-8">
+                                    @if (Model.Ano.HasValue)
+                                    {
+                                        <span class="badge bg-light text-dark border">
+                                            @Model.Ano
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">N/A</span>
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+
+                        <!-- Información del Cliente -->
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">Información del Cliente</h5>
+
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <dl class="row mb-0">
+                                        <dt class="col-sm-4">Cliente:</dt>
+                                        <dd class="col-sm-8">
+                                            <strong>@Model.ClienteNombre</strong>
+                                        </dd>
+
+                                        <dt class="col-sm-4">ID Cliente:</dt>
+                                        <dd class="col-sm-8">
+                                            <span class="badge bg-dark">#@Model.ClienteId</span>
+                                        </dd>
+
+                                        <dt class="col-sm-4">Estado:</dt>
+                                        <dd class="col-sm-8">
+                                            <span class="badge bg-success">
+                                                <i class="bi bi-check-circle"></i> Activo
+                                            </span>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+
+                            <!-- Información Adicional -->
+                            <div class="mt-4">
+                                <h6 class="text-muted mb-3">
+                                    <i class="bi bi-clock-history"></i> Historial
+                                </h6>
+                                <ul class="list-unstyled">
+                                    <li class="mb-2">
+                                        <i class="bi bi-calendar-check text-success"></i>
+                                        <small class="text-muted">Registrado: Información de registro</small>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="bi bi-arrow-repeat text-primary"></i>
+                                        <small class="text-muted">Última actualización: Reciente</small>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección de Tickets (opcional) -->
+                    @if (ViewBag.Tickets != null && ((IEnumerable<dynamic>)ViewBag.Tickets).Any())
+                    {
+                        <div class="mt-4">
+                            <h5 class="border-bottom pb-2">
+                                <i class="bi bi-ticket"></i> Tickets Asociados
+                            </h5>
+
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Ticket ID</th>
+                                            <th>Fecha Entrada</th>
+                                            <th>Fecha Salida</th>
+                                            <th>Total</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var ticket in ViewBag.Tickets)
+                                        {
+                                            <tr>
+                                                <td>#@ticket.Id</td>
+                                                <td>@ticket.FechaEntrada.ToString("g")</td>
+                                                <td>@(ticket.FechaSalida?.ToString("g") ?? "Activo")</td>
+                                                <td>@(ticket.TotalPagar?.ToString("C") ?? "Pendiente")</td>
+                                                <td>
+                                                    <span class="badge @(ticket.Estado == "Activo" ? "bg-warning" : "bg-success")">
+                                                        @ticket.Estado
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                                <i class="bi bi-pencil"></i> Editar
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </a>
+                        </div>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver al Listado
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<style>
+    dt {
+        font-weight: 600;
+        color: #495057;
+    }
+
+    dd {
+        margin-bottom: 1rem;
+    }
+
+    .card.bg-light {
+        border: 1px solid #dee2e6;
+    }
+</style>
+
+@functions {
+    string ObtenerColorHex(string color)
+    {
+        if (string.IsNullOrEmpty(color))
+            return "#6c757d";
+
+        return color.ToLower() switch
+        {
+            "rojo" => "#dc3545",
+            "azul" => "#0d6efd",
+            "verde" => "#198754",
+            "amarillo" => "#ffc107",
+            "naranja" => "#fd7e14",
+            "negro" => "#212529",
+            "blanco" => "#f8f9fa",
+            "gris" => "#6c757d",
+            "plateado" => "#c0c0c0",
+            "dorado" => "#ffd700",
+            _ => "#6c757d"
+        };
+    }
+
+    bool EsColorClaro(string color)
+    {
+        if (string.IsNullOrEmpty(color))
+            return false;
+
+        var coloresClaros = new[] { "blanco", "amarillo", "dorado" };
+        return coloresClaros.Contains(color.ToLower());
+    }
+}

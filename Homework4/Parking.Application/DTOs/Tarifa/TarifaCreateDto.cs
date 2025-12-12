@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Parking.Application.DTOs
+namespace Parking.Application.Dtos.Tarifa 
 {
-    public class TarifaCreateDto
+    public class CreateTarifaDto 
+
     {
-        public string TipoVehiculo { get; set; }
-        public decimal PrecioHora { get; set; }
+        [Required]
+        public string TipoVehiculo { get; set; } = string.Empty;
+
+        [Required]
+        [Range(0.01, 1000)]
+        public decimal MontoHora { get; set; } = decimal.MinValue;
+        public decimal MontoDia { get; set; }  = decimal.MaxValue;
     }
 }
-

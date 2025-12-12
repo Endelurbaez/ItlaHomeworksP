@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+}
+
+<h2>Bienvenido al Sistema de Parking</h2>
+
+<p>
+    Use la barra de navegación para acceder a Clientes, Vehículos, Tarifas y Tickets.
+</p>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Clientes</h5>
+                <p class="card-text">Gestione la información de los clientes.</p>
+                <a asp-controller="Cliente" asp-action="Index" class="btn btn-light">Ver Clientes</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Vehículos</h5>
+                <p class="card-text">Gestione la información de los vehículos.</p>
+                <a asp-controller="Vehiculo" asp-action="Index" class="btn btn-light">Ver Vehículos</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Tarifas</h5>
+                <p class="card-text">Administre las tarifas por hora de estacionamiento.</p>
+                <a asp-controller="Tarifa" asp-action="Index" class="btn btn-light">Ver Tarifas</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-danger mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Tickets</h5>
+                <p class="card-text">Registre entradas y salidas de vehículos.</p>
+                <a asp-controller="Ticket" asp-action="Index" class="btn btn-light">Ver Tickets</a>
+            </div>
+        </div>
+    </div>
+</div>

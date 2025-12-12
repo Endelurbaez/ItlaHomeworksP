@@ -1,0 +1,185 @@
+﻿@model Parking.Main.Models.TicketViewModel
+
+@{
+    ViewData["Title"] = "Detalles del Ticket";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-ticket-detailed"></i> Ticket #@Model.Id
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Encabezado -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <span class="@Model.EstadoBadgeClass fs-6">
+                                @Model.Estado
+                            </span>
+                            <div class="mt-2">
+                                <small class="text-muted">Creado: @Model.FechaEntrada.ToString("f")</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h5 class="text-primary">@Model.TotalPagar?.ToString("C")</h5>
+                            <small class="text-muted">Total a pagar</small>
+                        </div>
+                    </div>
+
+                    <!-- Información en columnas -->
+                    <div class="row">
+                        <!-- Columna Izquierda: Vehículo -->
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-car-front"></i> Información del Vehículo
+                            </h5>
+
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <dl class="row mb-0">
+                                        <dt class="col-sm-4">Placa:</dt>
+                                        <dd class="col-sm-8">
+                                            <strong>@Model.PlacaVehiculo</strong>
+                                        </dd>
+
+                                        <dt class="col-sm-4">Marca:</dt>
+                                        <dd class="col-sm-8">@Model.MarcaVehiculo</dd>
+
+                                        <dt class="col-sm-4">Cliente:</dt>
+                                        <dd class="col-sm-8">@Model.ClienteNombre</dd>
+
+                                        <dt class="col-sm-4">ID Cliente:</dt>
+                                        <dd class="col-sm-8">
+                                            <span class="badge bg-dark">#@Model.ClienteId</span>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Columna Derecha: Tarifa y Tiempo -->
+                        <div class="col-md-6">
+                            <h5 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-clock"></i> Información de Tiempo y Tarifa
+                            </h5>
+
+                            <dl class="row">
+                                <dt class="col-sm-5">Tarifa:</dt>
+                                <dd class="col-sm-7">
+                                    @Model.NombreTarifa
+                                    <br>
+                                    <small class="text-muted">@Model.PrecioPorHora.ToString("C")/hora</small>
+                                </dd>
+
+                                <dt class="col-sm-5">Entrada:</dt>
+                                <dd class="col-sm-7">
+                                    <span class="badge bg-primary">
+                                        @Model.FechaEntrada.ToString("g")
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-5">Salida:</dt>
+                                <dd class="col-sm-7">
+                                    @if (Model.FechaSalida.HasValue)
+                                    {
+                                        <span class="badge bg-success">
+                                            @Model.FechaSalida.Value.ToString("g")
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">Activo</span>
+                                    }
+                                </dd>
+
+                                <dt class="col-sm-5">Duración:</dt>
+                                <dd class="col-sm-7">
+                                    @if (Model.HorasTranscurridas.HasValue)
+                                    {
+                                        <span class="badge bg-info">
+                                            @Model.HorasTranscurridas.Value horas
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">--</span>
+                                    }
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <!-- Resumen de Pago -->
+                    @if (Model.Estado != "Activo")
+                    {
+                        <div class="row mt-4">
+                            <div class="col-md-8 mx-auto">
+                                <div class="card border-success">
+                                    <div class="card-header bg-success text-white">
+                                        <h5 class="mb-0">
+                                            <i class="bi bi-receipt"></i> Resumen de Pago
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <p class="mb-2"><strong>Horas:</strong></p>
+                                                <p class="mb-2"><strong>Precio por Hora:</strong></p>
+                                                <p class="mb-0"><strong>Total:</strong></p>
+                                            </div>
+                                            <div class="col-sm-6 text-end">
+                                                <p class="mb-2">@(Model.HorasTranscurridas?.ToString() ?? "0") horas</p>
+                                                <p class="mb-2">@Model.PrecioPorHora.ToString("C")</p>
+                                                <h5 class="text-success">@Model.TotalPagar?.ToString("C")</h5>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            @if (Model.Estado == "Activo")
+                            {
+                                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                                    <i class="bi bi-pencil"></i> Editar
+                                </a>
+                                <a asp-action="Cerrar" asp-route-id="@Model.Id" class="btn btn-success">
+                                    <i class="bi bi-cash"></i> Cerrar Ticket
+                                </a>
+                            }
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </a>
+                        </div>
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver al Listado
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+<style>
+    dt {
+        font-weight: 600;
+        color: #495057;
+    }
+
+    .card.bg-light {
+        border: 1px solid #dee2e6;
+    }
+</style>
